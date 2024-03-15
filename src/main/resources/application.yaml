@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: highload
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/highload
+    username: highload
+    password: highload
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
