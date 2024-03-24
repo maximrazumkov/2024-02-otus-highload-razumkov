@@ -3,9 +3,9 @@ spring:
     name: highload
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/highload
+    username: postgres
+    password: postgres
 
 server:
   port: 8080
