@@ -12,8 +12,8 @@ public class Pbkdf2PasswordEncoderConfig {
     @Bean
     public Pbkdf2PasswordEncoder pbkdf2PasswordEncoder() {
         String pepper = "pepperyol56#gfcgjhn"; // secret key used by password encoding
-        int iterations = 200000;  // number of hash iteration
-        int hashWidth = 256;      // hash width in bits
+        int iterations = 25;  // number of hash iteration
+        int hashWidth = 16;      // hash width in bits
 
         Pbkdf2PasswordEncoder pbkdf2PasswordEncoder =
             new Pbkdf2PasswordEncoder(pepper, iterations, hashWidth, PBKDF2WithHmacSHA256);
