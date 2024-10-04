@@ -64,8 +64,8 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> search(String firstName, String lastName) {
         try {
-            final String query = "select * from usr where first_name like ? and second_name like ?;";
-            return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(User.class), firstName + "%", lastName + "%");
+            final String query = "select * from usr where first_name_tsvector @@ to_tsquery(?) and second_name_tsvector @@ to_tsquery(?);";
+            return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(User.class), firstName + ":*", lastName + ":*");
         } catch (Exception e) {
             final String error = String.format(
                     "Ошибка при попытке найти пользователя по first_name = %s и second_name = %s",
