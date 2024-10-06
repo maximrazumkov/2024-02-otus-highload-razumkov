@@ -25,9 +25,12 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.aspectj:aspectjtools:1.9.22.1")
 	implementation("org.flywaydb:flyway-core:9.7.0")
 	implementation("org.springframework.security:spring-security-crypto:6.2.1")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop
+	implementation("org.springframework.boot:spring-boot-starter-aop:3.3.3")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	compileOnly("org.projectlombok:lombok")

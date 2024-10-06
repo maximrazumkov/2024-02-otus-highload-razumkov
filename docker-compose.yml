@@ -1,20 +1,94 @@
 version: '3.3'
 services:
-  db:
-    container_name: pg
+  pgmaster:
+    container_name: pgmaster
     image: postgres
     restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.3
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: highload
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
-      - pg:/var/lib/pas
+      - "./volumes/pgmaster/:/var/lib/postgresql/data"
+  pgslave1:
+    container_name: pgslave1
+    image: postgres
+    restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5433"
+    volumes:
+      - "./volumes/pgslave1/:/var/lib/postgresql/data"
+    links:
+      - pgmaster
+  pgslave2:
+    container_name: pgslave2
+    image: postgres
+    restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5434:5434"
+    volumes:
+      - "./volumes/pgslave2/:/var/lib/postgresql/data"
+    links:
+      - pgmaster
+  pgpool:
+    image: bitnami/pgpool:latest
+    container_name: pgpool
+    environment:
+      - PGPOOL_BACKEND_NODES=0:pgmaster:5432,1:pgslave1:5433,2:pgslave2:5434
+      - PGPOOL_POSTGRES_USERNAME=postgres
+      - PGPOOL_POSTGRES_PASSWORD=postgres
+      - PGPOOL_HEALTH_CHECK_USER=postgres
+      - PGPOOL_HEALTH_CHECK_PASSWORD=postgres
+      - PGPOOL_SR_CHECK_USER=postgres
+      - PGPOOL_SR_CHECK_PASSWORD=postgres
+      - PGPOOL_ADMIN_USERNAME=admin
+      - PGPOOL_ADMIN_PASSWORD=admin
+    ports:
+      - "5435:5432"
+    depends_on:
+      - pgmaster
+      - pgslave1
+      - pgslave2
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.7
+  haproxy:
+    image: haproxy:2.5
+    container_name: haproxy
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "5001:5001"
+    depends_on:
+      - pgpool
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.8
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.6
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: root@root.com
@@ -27,17 +101,36 @@ services:
     build: .
     container_name: highloadApplication
     restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.2
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: highload
-      POSTGRES_HOST: pg
-      POSTGRES_PORT: 5432
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_MASTER: haproxy
+      POSTGRES_PORT_MASTER: 5001
+#      POSTGRES_HOST_SLAVE1: pgslave1
+#      POSTGRES_PORT_SLAVE1: 5433
+#      POSTGRES_HOST_SLAVE2: pgslave2
+#      POSTGRES_PORT_SLAVE2: 5434
     ports:
-      - "8080:8080"
+      - "8081:8081"
     links:
-      - db
+      - pgmaster
+
 volumes:
-  pg:
+  pgmaster:
+  pgslave1:
+  pgslave2:
   pgadmin:
+  haproxy:
+  pgpool:
   app:
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.0.0/16
+          gateway: 172.16.0.1
