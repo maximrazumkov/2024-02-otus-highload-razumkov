@@ -1,20 +1,90 @@
-version: '3.3'
+version: '3.8'
 services:
-  db:
-    container_name: pg
+  pgmaster:
+    container_name: pgmaster
     image: postgres
     restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.3
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: highload
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
-      - pg:/var/lib/pas
+      - "./volumes/master/:/var/lib/postgresql/data"
+      - "./pg/master/pg_hba.conf:/docker-entrypoint-initdb.d/config/master/pg_hba.conf"
+      - "./pg/master/postgresql.conf:/docker-entrypoint-initdb.d/config/master/postgresql.conf"
+      - "./pg/master/master-init.sh:/docker-entrypoint-initdb.d/master-init.sh"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 30
+  pgslave1:
+    container_name: pgslave1
+    image: postgres
+    restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5433"
+    volumes:
+      - "./volumes/slave1/:/var/lib/postgresql/data"
+      - "./pg/slave1/standby.signal:/docker-entrypoint-initdb.d/config/slave1/standby.signal"
+      - "./pg/slave1/postgresql.conf:/docker-entrypoint-initdb.d/config/slave1/postgresql.conf"
+      - "./pg/slave1/slave1-init.sh:/docker-entrypoint-initdb.d/slave1-init.sh"
+    links:
+      - pgmaster
+    depends_on:
+      pgmaster:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 1s
+      timeout: 1s
+      retries: 30
+  pgslave2:
+    container_name: pgslave2
+    image: postgres
+    restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5434:5434"
+    volumes:
+      - "./volumes/slave2/:/var/lib/postgresql/data"
+      - "./pg/slave2/standby.signal:/docker-entrypoint-initdb.d/config/slave2/standby.signal"
+      - "./pg/slave2/postgresql.conf:/docker-entrypoint-initdb.d/config/slave2/postgresql.conf"
+      - "./pg/slave2/slave2-init.sh:/docker-entrypoint-initdb.d/slave2-init.sh"
+    links:
+      - pgmaster
+    depends_on:
+      pgmaster:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 1s
+      timeout: 1s
+      retries: 30
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.6
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: root@root.com
@@ -27,17 +97,42 @@ services:
     build: .
     container_name: highloadApplication
     restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.2
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: highload
-      POSTGRES_HOST: pg
-      POSTGRES_PORT: 5432
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_MASTER: pgmaster
+      POSTGRES_PORT_MASTER: 5432
+      POSTGRES_HOST_SLAVE1: pgslave1
+      POSTGRES_PORT_SLAVE1: 5433
+      POSTGRES_HOST_SLAVE2: pgslave2
+      POSTGRES_PORT_SLAVE2: 5434
     ports:
-      - "8080:8080"
+      - "8081:8081"
     links:
-      - db
+      - pgmaster
+      - pgslave1
+      - pgslave2
+    depends_on:
+      pgmaster:
+        condition: service_healthy
+      pgslave1:
+        condition: service_healthy
+      pgslave2:
+        condition: service_healthy
 volumes:
-  pg:
+  pgmaster:
+  pgslave1:
+  pgslave2:
   pgadmin:
   app:
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.0.0/16
+          gateway: 172.16.0.1

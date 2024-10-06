@@ -6,6 +6,6 @@ import ru.otus.highload.domain.User;
 
 public interface UserRepository {
     User getUserById(UUID id);
-    UUID createUser(User user);
-    List<User> search(String firstName, String lastName);
+    UUID saveUser(User user);
+    List<User> findUserByFirstNameAndLastName(String firstName, String lastName);
 }
