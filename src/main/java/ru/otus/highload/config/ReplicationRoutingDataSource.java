@@ -5,9 +5,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * ReplicationRoutingDataSource routes connections by <code>@Transaction(readOnly=true|false)</code>
- */
 public class ReplicationRoutingDataSource extends AbstractRoutingDataSource {
 
     private static final String[] SLAVE_NODES = {"masterJdbcTemplate", "slave1JdbcTemplate", "slave2JdbcTemplate"};

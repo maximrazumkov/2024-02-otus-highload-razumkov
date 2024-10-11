@@ -1,13 +1,5 @@
 package ru.otus.highload.component;
 
-import org.aspectj.lang.annotation.After;
-import org.springframework.stereotype.Component;
-import ru.otus.highload.config.RoutingContext;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-
-import java.util.function.Consumer;
-
 //@Aspect
 //@Component
 public class DataSourceAspect {
