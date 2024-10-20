@@ -3,15 +3,6 @@ HELP.md
 build/
 volumes/
 
-!volumes/pgmaster/postgresql.conf
-!volumes/pgmaster/pg_hba.conf
-!volumes/pgslave1/postgresql.conf
-!volumes/pgslave1/pg_hba.conf
-!volumes/pgslave1/standby.signal
-!volumes/pgslave2/postgresql.conf
-!volumes/pgslave2/pg_hba.conf
-!volumes/pgslave2/standby.signal
-
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
