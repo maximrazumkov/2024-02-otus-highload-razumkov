@@ -18,6 +18,11 @@ services:
       - "./pg/master/pg_hba.conf:/docker-entrypoint-initdb.d/config/master/pg_hba.conf"
       - "./pg/master/postgresql.conf:/docker-entrypoint-initdb.d/config/master/postgresql.conf"
       - "./pg/master/master-init.sh:/docker-entrypoint-initdb.d/master-init.sh"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 30
   pgslave1:
     container_name: pgslave1
     image: postgres
@@ -38,7 +43,9 @@ services:
       - "./pg/slave1/slave1-init.sh:/docker-entrypoint-initdb.d/slave1-init.sh"
     links:
       - pgmaster
-###    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    depends_on:
+      pgmaster:
+        condition: service_healthy
   pgslave2:
     container_name: pgslave2
     image: postgres
@@ -59,8 +66,9 @@ services:
       - "./pg/slave2/slave2-init.sh:/docker-entrypoint-initdb.d/slave2-init.sh"
     links:
       - pgmaster
-#      - pgslave1
-#    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    depends_on:
+      pgmaster:
+        condition: service_healthy
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
