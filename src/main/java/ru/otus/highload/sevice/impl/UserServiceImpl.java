@@ -13,6 +13,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.highload.domain.User;
 import ru.otus.highload.dto.LoginDto;
 import ru.otus.highload.dto.UserDto;
@@ -30,23 +31,26 @@ public class UserServiceImpl implements UserService {
     private final Pbkdf2PasswordEncoder pbkdf2PasswordEncoder;
 
     @Override
+    @Transactional(readOnly = true)
     public UserDto getUser(String id) {
         User user = userRepository.getUserById(convertStringToUUID(id));
         return convertUserToUserDto(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> searchUser(String firstName, String lastName) {
-        List<User> userList = userRepository.search(firstName, lastName);
+        List<User> userList = userRepository.findUserByFirstNameAndLastName(firstName, lastName);
         return getUserDtos(userList);
     }
 
     @Override
+    @Transactional(readOnly = false)
     public UUID createUser(UserDtoWithPassword userDto) {
         String password = pbkdf2PasswordEncoder.encode(userDto.getPassword());
         User user = convertUserDtoToUser(userDto);
         user.setPassword(password);
-        return userRepository.createUser(user);
+        return userRepository.saveUser(user);
     }
 
     @Override

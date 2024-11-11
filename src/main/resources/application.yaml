@@ -2,13 +2,35 @@ spring:
   application:
     name: highload
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/highload
-    username: postgres
-    password: postgres
+    master:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://pgmaster:5432/postgres
+      username: postgres
+      password: postgres
+      hikari:
+        minimum-idle: 10
+        maximum-pool-size: 10
+
+    slave1:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://pgslave1:5433/postgres
+      username: postgres
+      password: postgres
+      hikari:
+        minimum-idle: 5
+        maximum-pool-size: 5
+
+    slave2:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://pgslave2:5434/postgres
+      username: postgres
+      password: postgres
+      hikari:
+        minimum-idle: 5
+        maximum-pool-size: 5
 
 server:
-  port: 8080
+  port: 8081
   error:
     include-message: always
     include-binding-errors: always
