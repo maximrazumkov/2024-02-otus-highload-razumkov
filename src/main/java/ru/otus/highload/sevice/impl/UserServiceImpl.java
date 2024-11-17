@@ -62,6 +62,11 @@ public class UserServiceImpl implements UserService {
         return getToken(user);
     }
 
+    @Override
+    public void updateIsCelebrityById(String usrId, boolean isCelebrity) {
+        userRepository.updateIsCelebrityById(convertStringToUUID(usrId), isCelebrity);
+    }
+
     private String getToken(User user) {
         Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
         String fullName = user.getFirstName() + " " + user.getSecondName();
@@ -75,6 +80,8 @@ public class UserServiceImpl implements UserService {
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
     }
+
+
 
     private UUID convertStringToUUID(String id) {
         try {

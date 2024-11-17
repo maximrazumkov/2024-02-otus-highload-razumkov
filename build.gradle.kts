@@ -31,6 +31,11 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop
 	implementation("org.springframework.boot:spring-boot-starter-aop:3.3.3")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("com.fasterxml.jackson.core:jackson-databind")
+	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.kafka:spring-kafka-test")
+	implementation("org.apache.kafka:kafka-clients")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	compileOnly("org.projectlombok:lombok")

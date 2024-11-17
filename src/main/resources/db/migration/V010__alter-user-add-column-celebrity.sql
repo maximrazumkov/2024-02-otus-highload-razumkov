@@ -1,0 +1,2 @@
+ALTER TABLE usr
+ADD COLUMN is_celebrity BOOLEAN DEFAULT false;
