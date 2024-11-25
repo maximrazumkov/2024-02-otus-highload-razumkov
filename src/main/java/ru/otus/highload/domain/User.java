@@ -21,6 +21,7 @@ public class User {
     private String gender;
     private String biography;
     private String city;
+    private Boolean isCelebrity;
     private String password;
 
     @Override

@@ -1,10 +1,32 @@
 spring:
   application:
     name: highload
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: ru.otus.highload.config.PostSerializer
+
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: post-consumer-group
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: ru.otus.highload.config.PostDeserializer
+      auto-offset-reset: earliest
+      max-poll-records: 1
+      properties:
+        max-poll-interval-ms: 15000
+    listener:
+      concurrency: 1
+      ack-mode: MANUAL_IMMEDIATE
+  redis:
+    host: localhost
+    port: 6379
   datasource:
     master:
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://pgmaster:5432/postgres
+      url: jdbc:postgresql://localhost:5432/postgres
       username: postgres
       password: postgres
       hikari:
@@ -13,7 +35,7 @@ spring:
 
     slave1:
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://pgslave1:5433/postgres
+      url: jdbc:postgresql://localhost:5433/postgres
       username: postgres
       password: postgres
       hikari:
@@ -22,7 +44,7 @@ spring:
 
     slave2:
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://pgslave2:5434/postgres
+      url: jdbc:postgresql://localhost:5434/postgres
       username: postgres
       password: postgres
       hikari:
@@ -34,3 +56,9 @@ server:
   error:
     include-message: always
     include-binding-errors: always
+
+topic:
+  name: "postTopic"
+
+celebrity-count: 1000
+cache-duration: 10

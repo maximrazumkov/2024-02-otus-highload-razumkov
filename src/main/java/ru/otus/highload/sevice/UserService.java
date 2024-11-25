@@ -11,4 +11,5 @@ public interface UserService {
     List<UserDto> searchUser(String firstName, String lastName);
     UUID createUser(UserDtoWithPassword userDto);
     String login(LoginDto loginDto);
+    void updateIsCelebrityById(String usrId, boolean isCelebrity);
 }

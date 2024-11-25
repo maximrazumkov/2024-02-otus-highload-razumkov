@@ -8,4 +8,5 @@ public interface UserRepository {
     User getUserById(UUID id);
     UUID saveUser(User user);
     List<User> findUserByFirstNameAndLastName(String firstName, String lastName);
+    void updateIsCelebrityById(UUID usrId, boolean isCelebrity);
 }
