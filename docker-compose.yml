@@ -165,6 +165,158 @@ services:
       - pgmaster
       - pgslave1
       - pgslave2
+  # First Shard Cluster
+
+  mongoshard11:
+    build:
+      context: build/replicaset
+    container_name: mongoshard11
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.10
+    depends_on:
+      - mongoshard12
+      - mongoshard13
+    command: mongod --shardsvr --replSet shard1 --dbpath /data/db --port 27017
+    environment:
+      - REPLICA_SET=shard1
+    expose:
+      - "27017"
+    volumes:
+      - shard_d11:/data/db
+  mongoshard12:
+    image: mongo
+    container_name: mongoshard12
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.11
+    command: mongod --shardsvr --replSet shard1 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - shard_d12:/data/db
+  mongoshard13:
+    image: mongo
+    container_name: mongoshard13
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.12
+    command: mongod --shardsvr --replSet shard1 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - shard_d13:/data/db
+
+  # Second Shard Cluster
+
+  mongoshard21:
+    build:
+      context: build/replicaset
+    container_name: mongoshard21
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.13
+    depends_on:
+      - mongoshard22
+      - mongoshard23
+    command: mongod --shardsvr --replSet shard2 --dbpath /data/db --port 27017
+    environment:
+      - REPLICA_SET=shard2
+    expose:
+      - "27017"
+    volumes:
+      - shard_d21:/data/db
+  mongoshard22:
+    image: mongo
+    container_name: mongoshard22
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.14
+    command: mongod --shardsvr --replSet shard2 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - shard_d22:/data/db
+  mongoshard23:
+    image: mongo
+    container_name: mongoshard23
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.15
+    command: mongod --shardsvr --replSet shard2 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - shard_d23:/data/db
+
+    # Config Cluster
+
+  mongocfg1:
+    build:
+      context: build/replicaset
+    container_name: mongocfg1
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.16
+    depends_on:
+      - mongocfg2
+      - mongocfg3
+    command: mongod --configsvr --replSet cfg --dbpath /data/db --port 27017
+    environment:
+      - REPLICA_SET=cfg
+    expose:
+      - "27017"
+    volumes:
+      - shard_c1:/data/db
+  mongocfg2:
+    image: mongo
+    container_name: mongocfg2
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.17
+    command: mongod --configsvr --replSet cfg --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - shard_c2:/data/db
+  mongocfg3:
+    image: mongo
+    container_name: mongocfg3
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.18
+    command: mongod --configsvr --replSet cfg --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - shard_c3:/data/db
+
+  # Build mongos Router
+
+  mongos1:
+    build:
+      context: build/router
+    container_name: mongos1
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.19
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+      - mongocfg3
+      - mongoshard11
+      - mongoshard12
+      - mongoshard13
+      - mongoshard21
+      - mongoshard22
+      - mongoshard23
+    command: mongos --configdb cfg/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+    environment: #we can specify only the primary node for each cluster shard, other nodes will appear automatically
+      - SHARDS=shard1/mongoshard11;shard2/mongoshard21
+    ports:
+      - 27027:27017
+    expose:
+      - "27017"
 volumes:
   pgmaster:
   pgslave1:
@@ -173,6 +325,15 @@ volumes:
   redis:
   kafka:
   app:
+  shard_d11:
+  shard_d12:
+  shard_d13:
+  shard_d21:
+  shard_d22:
+  shard_d23:
+  shard_c1:
+  shard_c2:
+  shard_c3:
 
 networks:
   localnet:

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: highload
+  data:
+    mongodb:
+      uri: mongodb://localhost:27027/chat_app
+  liquibase:
+    change-log: classpath:db/changelog/mongo-changelog.yaml
+
+server:
+  port: 8082
+  error:
+    include-message: always
+    include-binding-errors: always
