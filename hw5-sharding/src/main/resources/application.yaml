@@ -1,11 +1,9 @@
 spring:
   application:
-    name: highload
+    name: dialogHighload
   data:
     mongodb:
-      uri: mongodb://localhost:27027/chat_app
-  liquibase:
-    change-log: classpath:db/changelog/mongo-changelog.yaml
+      uri: mongodb://localhost:27027/chatApp
 
 server:
   port: 8082

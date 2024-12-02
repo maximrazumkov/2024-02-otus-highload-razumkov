@@ -21,27 +21,26 @@ repositories {
 }
 
 dependencies {
-    implementation("org.liquibase:liquibase-core")
-    implementation("org.liquibase.ext:liquibase-mongodb:4.30.0")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 }
 
-tasks {
-    shadowJar {
-        archiveBaseName.set("gradleHelloWorld")
-        archiveVersion.set("0.1")
-        archiveClassifier.set("")
-        manifest {
-            attributes(
-                "Main-Class" to "ru.otus.App"
-            )
-        }
-    }
 
-    build {
-        dependsOn(shadowJar)
-    }
-}
+//tasks {
+//    shadowJar {
+//        archiveBaseName.set("gradleHelloWorld")
+//        archiveVersion.set("0.1")
+//        archiveClassifier.set("")
+//        manifest {
+//            attributes(
+//                "Main-Class" to "ru.otus.App"
+//            )
+//        }
+//    }
+//
+//    build {
+//        dependsOn(shadowJar)
+//    }
+//}
