@@ -135,41 +135,41 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  app:
-    build: .
-    container_name: highloadApplication
-    restart: always
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.2
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_HOST_MASTER: pgmaster
-      POSTGRES_PORT_MASTER: 5432
-      POSTGRES_HOST_SLAVE1: pgslave1
-      POSTGRES_PORT_SLAVE1: 5433
-      POSTGRES_HOST_SLAVE2: pgslave2
-      POSTGRES_PORT_SLAVE2: 5434
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-    ports:
-      - "8081:8081"
-    links:
-      - pgmaster
-      - pgslave1
-      - pgslave2
-    depends_on:
-      - pgmaster
-      - pgslave1
-      - pgslave2
+#  app:
+#    build: .
+#    container_name: highloadApplication
+#    restart: always
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.2
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: postgres
+#      POSTGRES_HOST_MASTER: pgmaster
+#      POSTGRES_PORT_MASTER: 5432
+#      POSTGRES_HOST_SLAVE1: pgslave1
+#      POSTGRES_PORT_SLAVE1: 5433
+#      POSTGRES_HOST_SLAVE2: pgslave2
+#      POSTGRES_PORT_SLAVE2: 5434
+#      REDIS_HOST: redis
+#      REDIS_PORT: 6379
+#      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+#    ports:
+#      - "8081:8081"
+#    links:
+#      - pgmaster
+#      - pgslave1
+#      - pgslave2
+#    depends_on:
+#      - pgmaster
+#      - pgslave1
+#      - pgslave2
   # First Shard Cluster
 
   mongoshard11:
     build:
-      context: build/replicaset
+      context: mongo/replicaset
     container_name: mongoshard11
     networks:
       localnet:
@@ -211,7 +211,7 @@ services:
 
   mongoshard21:
     build:
-      context: build/replicaset
+      context: mongo/replicaset
     container_name: mongoshard21
     networks:
       localnet:
@@ -253,7 +253,7 @@ services:
 
   mongocfg1:
     build:
-      context: build/replicaset
+      context: mongo/replicaset
     container_name: mongocfg1
     networks:
       localnet:
@@ -295,7 +295,7 @@ services:
 
   mongos1:
     build:
-      context: build/router
+      context: mongo/router
     container_name: mongos1
     networks:
       localnet:
@@ -332,6 +332,24 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: ""
     ports:
       - "8090:8081"
+
+  dialog:
+    build: ./hw5-sharding/.
+    container_name: dialogHighload
+    restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.21
+    environment:
+      MONGO_HOST: mongos1
+      MONGO_PORT: 27017
+      MONGO_DB_NAME: chatApp
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongos1
+#      - app
+
 volumes:
   pgmaster:
   pgslave1:
@@ -349,6 +367,7 @@ volumes:
   shard_c1:
   shard_c2:
   shard_c3:
+  dialog:
 
 networks:
   localnet:
