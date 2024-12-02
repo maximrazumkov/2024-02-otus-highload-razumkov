@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/dialogs")
+@RequestMapping("/dialog")
 @RequiredArgsConstructor
 public class DialogController {
 
@@ -48,12 +48,12 @@ public class DialogController {
         return ResponseEntity.ok("Dialog deleted successfully");
     }
 
-    @GetMapping("/{dialogId}/messages")
+    @GetMapping("/{dialogId}/message")
     public ResponseEntity<List<Message>> getMessages(@PathVariable UUID dialogId) {
         return ResponseEntity.ok(dialogService.getMessages(dialogId));
     }
 
-    @PostMapping("/{dialogId}/messages")
+    @PostMapping("/{dialogId}/message")
     public ResponseEntity<String> createMessage(
             @PathVariable UUID dialogId,
             @RequestBody MessageDto messageDto
@@ -69,7 +69,7 @@ public class DialogController {
         return ResponseEntity.ok("Message created successfully");
     }
 
-    @PutMapping("/{dialogId}/messages/{messageId}")
+    @PutMapping("/{dialogId}/message/{messageId}")
     public ResponseEntity<String> editMessage(
             @PathVariable UUID dialogId,
             @PathVariable UUID messageId,
