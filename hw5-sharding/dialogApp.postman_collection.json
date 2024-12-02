@@ -1,0 +1,158 @@
+{
+	"info": {
+		"_postman_id": "13899339-e267-4d68-a048-455be6ea0acc",
+		"name": "dialogApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:8082/dialogs",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"team\",\n    \"participants\": [\n        {\n            \"userId\": \"2ca6719b-f094-424d-aa73-8d7d96cdfd9a\",\n            \"userName\": \"Иванов Никита\"\n        },\n        {\n            \"userId\": \"6a149cbe-0dda-428a-bd1d-7dcb74ece5a9\",\n            \"userName\": \"Дмитрий СИвуха\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/dialog",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"dialog"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8082/dialogs/f8c91374-890d-4a92-86d6-e21bfaaf350f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"team\",\n    \"participants\": [\n        {\n            \"userId\": \"c2625e9a-2051-4f02-9349-bbde7c0941f2\",\n            \"userName\": \"Петров Павел\"\n        },\n        {\n            \"userId\": \"513f2231-87fb-4474-9035-1778150056e8\",\n            \"userName\": \"Анна Викторовна\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/dialog/f8c91374-890d-4a92-86d6-e21bfaaf350f",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"dialog",
+						"f8c91374-890d-4a92-86d6-e21bfaaf350f"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8082/dialog/b4d5dba6-23a7-4b0f-b1df-d30fc06dc6f6/message/d45f468c-4517-4c96-bfe8-fa529696346a",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sender_id\": \"513f2231-87fb-4474-9035-1778150056e8\",\n    \"sender_name\": \"Анна Викторовна\",\n    \"message_text\": \"Давно не виделись!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/dialog/b4d5dba6-23a7-4b0f-b1df-d30fc06dc6f6/message/d45f468c-4517-4c96-bfe8-fa529696346a",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"dialog",
+						"b4d5dba6-23a7-4b0f-b1df-d30fc06dc6f6",
+						"message",
+						"d45f468c-4517-4c96-bfe8-fa529696346a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8082/dialog/3b12970e-8e52-40d5-a8d7-4531c86eb959/message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sender_id\": \"2ca6719b-f094-424d-aa73-8d7d96cdfd9a\",\n    \"sender_name\": \"Иванов Никита\",\n    \"message_text\": \"Нормас, Диман! Сам как?\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/dialog/3b12970e-8e52-40d5-a8d7-4531c86eb959/message",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"dialog",
+						"3b12970e-8e52-40d5-a8d7-4531c86eb959",
+						"message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8082/dialog/3b12970e-8e52-40d5-a8d7-4531c86eb959/message",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"team\",\n    \"participants\": [\n        {\n            \"userId\": \"c2625e9a-2051-4f02-9349-bbde7c0941f2\",\n            \"userName\": \"Петров Павел\"\n        },\n        {\n            \"userId\": \"513f2231-87fb-4474-9035-1778150056e8\",\n            \"userName\": \"Анна Викторовна\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/dialog/3b12970e-8e52-40d5-a8d7-4531c86eb959/message",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"dialog",
+						"3b12970e-8e52-40d5-a8d7-4531c86eb959",
+						"message"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
