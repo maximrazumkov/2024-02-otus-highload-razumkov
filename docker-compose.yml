@@ -348,7 +348,7 @@ services:
       - "8082:8082"
     depends_on:
       - mongos1
-#      - app
+      - app
 
 volumes:
   pgmaster:
