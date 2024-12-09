@@ -14,8 +14,7 @@ ARG REDIS_PORT
 ARG KAFKA_BOOTSTRAP_SERVERS
 VOLUME /opt/highload/
 WORKDIR /opt/highload/
-COPY ./ /opt/highload/
-RUN ./gradlew build
+COPY ./build/libs/highload-0.0.1-SNAPSHOT.jar /opt/highload/
 EXPOSE 8080
 CMD java -jar \
     -Dspring.datasource.master.url=jdbc:postgresql://${POSTGRES_HOST_MASTER}:${POSTGRES_PORT_MASTER}/${POSTGRES_DB} \
@@ -31,4 +30,4 @@ CMD java -jar \
     -Dspring.kafka.consumer.bootstrap-servers=${KAFKA_BOOTSTRAP_SERVERS} \
     -Dspring.redis.host=${REDIS_HOST} \
     -Dspring.redis.port=${REDIS_PORT} \
-    build/libs/highload-0.0.1-SNAPSHOT.jar
+    highload-0.0.1-SNAPSHOT.jar

@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: dialogHighload
+  data:
+    mongodb:
+      uri: mongodb://localhost:27027/chatApp
+
+server:
+  port: 8082
+  error:
+    include-message: always
+    include-binding-errors: always

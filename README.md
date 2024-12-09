@@ -2,5 +2,8 @@
 
 Запуск приложения запустите в териминале команду:
 ```
-docker-compose up
+./gradlew clean build
+```
+```
+docker-compose up -d
 ```
