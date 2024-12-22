@@ -27,6 +27,7 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final RedisService redisService;
     private final KafkaTemplate<String, Post> kafkaTemplate;
+    private final PostWebSocketHandler postWebSocketHandler;
 
     @Override
     @Transactional
@@ -34,7 +35,10 @@ public class PostServiceImpl implements PostService {
         UUID postId = postRepository.createPost(post.getUsrId(), post.getText());
         sendToKafka(post.getUsrId(), postId);
         Post newPost = new Post();
+        newPost.setText(post.getText());
         newPost.setId(postId);
+        newPost.setUsrId(post.getUsrId());
+        postWebSocketHandler.broadcast(newPost);
         return newPost;
     }
 
