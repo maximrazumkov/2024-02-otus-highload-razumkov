@@ -41,6 +41,11 @@ public class MongoDBMigrationConfig {
                     adminDb.runCommand(new Document("shardCollection", "chatApp.messages")
                             .append("key", new Document("dialogId", "hashed")));
 
+
+                    //
+
+                    //
+
                     System.out.println("MongoDB migrations completed successfully.");
                 } else {
                     System.out.println("Database " + dbName + " already exists. Skipping creation.");

@@ -1,6 +1,11 @@
 package ru.otus.repository.impl;
 
+import com.mongodb.client.FindIterable;
 import lombok.RequiredArgsConstructor;
+import org.bson.BsonDocument;
+import org.bson.BsonString;
+import org.bson.BsonValue;
+import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -21,7 +26,8 @@ public class MessageRepositoryImpl implements MessageRepository {
 
     public List<Message> findMessagesByDialogId(UUID dialogId) {
         Query query = new Query(Criteria.where("dialogId").is(dialogId));
-        return mongoTemplate.find(query, Message.class, "messages");
+        List<Message> messages = mongoTemplate.find(query, Message.class, "messages");
+        return messages;
     }
 
     public void createMessage(UUID dialogId, Message message) {
