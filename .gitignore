@@ -2,6 +2,7 @@ HELP.md
 .gradle
 build/
 volumes/
+hw7-tarantool/tarantool/data
 
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/

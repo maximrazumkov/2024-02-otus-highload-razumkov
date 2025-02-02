@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  tarantool:
+    container_name: tarantool
+    image: tarantool/tarantool
+    command: tarantool /opt/tarantool/app.lua
+    environment:
+      - TARANTOOL_USER_NAME=tarantool
+      - TARANTOOL_USER_PASSWORD=tarantool
+    ports:
+      - "3301:3301"
+    networks:
+      tarantooldb:
+        ipv4_address: 192.28.0.2
+    volumes:
+      - ./tarantool/init.lua:/opt/tarantool/app.lua
+      - ./tarantool/data:/var/lib/tarantool
+
+  dialogtatanrool:
+    build: .
+    container_name: dialogtatanrool
+    restart: always
+    networks:
+      tarantooldb:
+        ipv4_address: 192.28.0.3
+    environment:
+      TARANTOOL_HOST: 192.28.0.2
+      TARANTOOL_PORT: 3301
+    ports:
+      - "8082:8082"
+    depends_on:
+      - tarantool
+
+networks:
+  tarantooldb:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.28.0.0/16
+          gateway: 192.28.0.1
