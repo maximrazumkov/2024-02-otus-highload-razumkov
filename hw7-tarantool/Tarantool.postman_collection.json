@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "0d20be7f-a5ca-4794-9498-769d5da3020c",
+		"name": "Tarantool",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10815759"
+	},
+	"item": [
+		{
+			"name": "localhost:8082/dialog/d676ac2d-b4ef-49f7-9681-8292ad0839ba",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Auth-User",
+						"value": "a407783f-da21-4305-985a-57bb9e0dc",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:8082/dialog/d676ac2d-b4ef-49f7-9681-8292ad0839ba",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"dialog",
+						"d676ac2d-b4ef-49f7-9681-8292ad0839ba"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8082/dialog/d676ac2d-b4ef-49f7-9681-8292ad0839ba/message",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Auth-User",
+						"value": "a407783f-da21-4305-985a-57bb9e0dca9b",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\": \"Привет!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/dialog/d676ac2d-b4ef-49f7-9681-8292ad0839ba/message",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"dialog",
+						"d676ac2d-b4ef-49f7-9681-8292ad0839ba",
+						"message"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
