@@ -165,190 +165,222 @@ services:
       - pgmaster
       - pgslave1
       - pgslave2
-  # First Shard Cluster
 
-  mongoshard11:
-    build:
-      context: mongo/replicaset
-    container_name: mongoshard11
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.10
-    depends_on:
-      - mongoshard12
-      - mongoshard13
-    command: mongod --shardsvr --replSet shard1 --dbpath /data/db --port 27017
+  tarantool:
+    container_name: tarantool
+    image: tarantool/tarantool
+    command: tarantool /opt/tarantool/app.lua
     environment:
-      - REPLICA_SET=shard1
-    expose:
-      - "27017"
-    volumes:
-      - shard_d11:/data/db
-  mongoshard12:
-    image: mongo
-    container_name: mongoshard12
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.11
-    command: mongod --shardsvr --replSet shard1 --dbpath /data/db --port 27017
-    expose:
-      - "27017"
-    volumes:
-      - shard_d12:/data/db
-  mongoshard13:
-    image: mongo
-    container_name: mongoshard13
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.12
-    command: mongod --shardsvr --replSet shard1 --dbpath /data/db --port 27017
-    expose:
-      - "27017"
-    volumes:
-      - shard_d13:/data/db
-
-  # Second Shard Cluster
-
-  mongoshard21:
-    build:
-      context: mongo/replicaset
-    container_name: mongoshard21
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.13
-    depends_on:
-      - mongoshard22
-      - mongoshard23
-    command: mongod --shardsvr --replSet shard2 --dbpath /data/db --port 27017
-    environment:
-      - REPLICA_SET=shard2
-    expose:
-      - "27017"
-    volumes:
-      - shard_d21:/data/db
-  mongoshard22:
-    image: mongo
-    container_name: mongoshard22
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.14
-    command: mongod --shardsvr --replSet shard2 --dbpath /data/db --port 27017
-    expose:
-      - "27017"
-    volumes:
-      - shard_d22:/data/db
-  mongoshard23:
-    image: mongo
-    container_name: mongoshard23
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.15
-    command: mongod --shardsvr --replSet shard2 --dbpath /data/db --port 27017
-    expose:
-      - "27017"
-    volumes:
-      - shard_d23:/data/db
-
-    # Config Cluster
-
-  mongocfg1:
-    build:
-      context: mongo/replicaset
-    container_name: mongocfg1
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.16
-    depends_on:
-      - mongocfg2
-      - mongocfg3
-    command: mongod --configsvr --replSet cfg --dbpath /data/db --port 27017
-    environment:
-      - REPLICA_SET=cfg
-    expose:
-      - "27017"
-    volumes:
-      - shard_c1:/data/db
-  mongocfg2:
-    image: mongo
-    container_name: mongocfg2
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.17
-    command: mongod --configsvr --replSet cfg --dbpath /data/db --port 27017
-    expose:
-      - "27017"
-    volumes:
-      - shard_c2:/data/db
-  mongocfg3:
-    image: mongo
-    container_name: mongocfg3
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.18
-    command: mongod --configsvr --replSet cfg --dbpath /data/db --port 27017
-    expose:
-      - "27017"
-    volumes:
-      - shard_c3:/data/db
-
-  # Build mongos Router
-
-  mongos1:
-    build:
-      context: mongo/router
-    container_name: mongos1
-    networks:
-      localnet:
-        ipv4_address: 172.16.0.19
-    depends_on:
-      - mongocfg1
-      - mongocfg2
-      - mongocfg3
-      - mongoshard11
-      - mongoshard12
-      - mongoshard13
-      - mongoshard21
-      - mongoshard22
-      - mongoshard23
-    command: mongos --configdb cfg/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
-    environment: #we can specify only the primary node for each cluster shard, other nodes will appear automatically
-      - SHARDS=shard1/mongoshard11;shard2/mongoshard21
+      - TARANTOOL_USER_NAME=tarantool
+      - TARANTOOL_USER_PASSWORD=tarantool
     ports:
-      - 27027:27017
-    expose:
-      - "27017"
-  mongo-express:
-    image: mongo-express
-    container_name: mongo-express
+      - "3301:3301"
     networks:
       localnet:
-        ipv4_address: 172.16.0.20
-    depends_on:
-      - mongos1
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongos1
-      ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ""
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ""
-    ports:
-      - "8090:8081"
+        ipv4_address: 172.16.0.22
+    volumes:
+      - ./hw7-tarantool/tarantool/init.lua:/opt/tarantool/app.lua
+      - ./hw7-tarantool/tarantool/data:/var/lib/tarantool
 
-  dialog:
-    build: ./hw5-sharding/.
-    container_name: dialogHighload
+  dialogtatanrool:
+    build: ./hw7-tarantool/.
+    container_name: dialogtatanrool
     restart: always
     networks:
       localnet:
-        ipv4_address: 172.16.0.21
+        ipv4_address: 172.16.0.23
     environment:
-      MONGO_HOST: mongos1
-      MONGO_PORT: 27017
-      MONGO_DB_NAME: chatApp
+      TARANTOOL_HOST: 172.16.0.22
+      TARANTOOL_PORT: 3301
+      USER_SERVICE_URL: http://172.16.0.2:8081
     ports:
       - "8082:8082"
     depends_on:
-      - mongos1
-      - app
+      - tarantool
+#  # First Shard Cluster
+
+#  mongoshard11:
+#    build:
+#      context: mongo/replicaset
+#    container_name: mongoshard11
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.10
+#    depends_on:
+#      - mongoshard12
+#      - mongoshard13
+#    command: mongod --shardsvr --replSet shard1 --dbpath /data/db --port 27017
+#    environment:
+#      - REPLICA_SET=shard1
+#    expose:
+#      - "27017"
+#    volumes:
+#      - shard_d11:/data/db
+#  mongoshard12:
+#    image: mongo
+#    container_name: mongoshard12
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.11
+#    command: mongod --shardsvr --replSet shard1 --dbpath /data/db --port 27017
+#    expose:
+#      - "27017"
+#    volumes:
+#      - shard_d12:/data/db
+#  mongoshard13:
+#    image: mongo
+#    container_name: mongoshard13
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.12
+#    command: mongod --shardsvr --replSet shard1 --dbpath /data/db --port 27017
+#    expose:
+#      - "27017"
+#    volumes:
+#      - shard_d13:/data/db
+#
+#  # Second Shard Cluster
+#
+#  mongoshard21:
+#    build:
+#      context: mongo/replicaset
+#    container_name: mongoshard21
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.13
+#    depends_on:
+#      - mongoshard22
+#      - mongoshard23
+#    command: mongod --shardsvr --replSet shard2 --dbpath /data/db --port 27017
+#    environment:
+#      - REPLICA_SET=shard2
+#    expose:
+#      - "27017"
+#    volumes:
+#      - shard_d21:/data/db
+#  mongoshard22:
+#    image: mongo
+#    container_name: mongoshard22
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.14
+#    command: mongod --shardsvr --replSet shard2 --dbpath /data/db --port 27017
+#    expose:
+#      - "27017"
+#    volumes:
+#      - shard_d22:/data/db
+#  mongoshard23:
+#    image: mongo
+#    container_name: mongoshard23
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.15
+#    command: mongod --shardsvr --replSet shard2 --dbpath /data/db --port 27017
+#    expose:
+#      - "27017"
+#    volumes:
+#      - shard_d23:/data/db
+#
+#    # Config Cluster
+#
+#  mongocfg1:
+#    build:
+#      context: mongo/replicaset
+#    container_name: mongocfg1
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.16
+#    depends_on:
+#      - mongocfg2
+#      - mongocfg3
+#    command: mongod --configsvr --replSet cfg --dbpath /data/db --port 27017
+#    environment:
+#      - REPLICA_SET=cfg
+#    expose:
+#      - "27017"
+#    volumes:
+#      - shard_c1:/data/db
+#  mongocfg2:
+#    image: mongo
+#    container_name: mongocfg2
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.17
+#    command: mongod --configsvr --replSet cfg --dbpath /data/db --port 27017
+#    expose:
+#      - "27017"
+#    volumes:
+#      - shard_c2:/data/db
+#  mongocfg3:
+#    image: mongo
+#    container_name: mongocfg3
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.18
+#    command: mongod --configsvr --replSet cfg --dbpath /data/db --port 27017
+#    expose:
+#      - "27017"
+#    volumes:
+#      - shard_c3:/data/db
+#
+#  # Build mongos Router
+#
+#  mongos1:
+#    build:
+#      context: mongo/router
+#    container_name: mongos1
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.19
+#    depends_on:
+#      - mongocfg1
+#      - mongocfg2
+#      - mongocfg3
+#      - mongoshard11
+#      - mongoshard12
+#      - mongoshard13
+#      - mongoshard21
+#      - mongoshard22
+#      - mongoshard23
+#    command: mongos --configdb cfg/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+#    environment: #we can specify only the primary node for each cluster shard, other nodes will appear automatically
+#      - SHARDS=shard1/mongoshard11;shard2/mongoshard21
+#    ports:
+#      - 27027:27017
+#    expose:
+#      - "27017"
+#  mongo-express:
+#    image: mongo-express
+#    container_name: mongo-express
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.20
+#    depends_on:
+#      - mongos1
+#    environment:
+#      ME_CONFIG_MONGODB_SERVER: mongos1
+#      ME_CONFIG_MONGODB_PORT: 27017
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: ""
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: ""
+#    ports:
+#      - "8090:8081"
+
+#  dialog:
+#    build: ./hw5-sharding/.
+#    container_name: dialogHighload
+#    restart: always
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.21
+#    environment:
+#      MONGO_HOST: mongos1
+#      MONGO_PORT: 27017
+#      MONGO_DB_NAME: chatApp
+#    ports:
+#      - "8082:8082"
+#    depends_on:
+#      - mongos1
+#      - app
 
 volumes:
   pgmaster:
@@ -358,16 +390,16 @@ volumes:
   redis:
   kafka:
   app:
-  shard_d11:
-  shard_d12:
-  shard_d13:
-  shard_d21:
-  shard_d22:
-  shard_d23:
-  shard_c1:
-  shard_c2:
-  shard_c3:
-  dialog:
+#  shard_d11:
+#  shard_d12:
+#  shard_d13:
+#  shard_d21:
+#  shard_d22:
+#  shard_d23:
+#  shard_c1:
+#  shard_c2:
+#  shard_c3:
+#  dialog:
 
 networks:
   localnet:

@@ -10,4 +10,5 @@ EXPOSE 8082
 CMD java -jar \
     -Dtarantool.uri=${TARANTOOL_HOST} \
     -Dtarantool.port=${TARANTOOL_PORT} \
+    -DuserService.url=${USER_SERVICE_URL} \
     hw7-tarantool.jar
