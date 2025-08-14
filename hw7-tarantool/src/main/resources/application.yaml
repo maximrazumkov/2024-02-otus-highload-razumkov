@@ -11,3 +11,5 @@ server:
   error:
     include-message: always
     include-binding-errors: always
+userService:
+  url: http://localhost:8081
