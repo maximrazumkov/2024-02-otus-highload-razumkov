@@ -93,6 +93,81 @@ services:
       - "5050:80"
     volumes:
       - pgadmin:/var/lib/pas
+
+#  pgpool:
+#    image: bitnami/pgpool:latest
+#    container_name: pgpool
+#    environment:
+#      - PGPOOL_BACKEND_NODES=0:pgmaster:5432,1:pgslave1:5433,2:pgslave2:5434
+#      - PGPOOL_BACKEND_APPLICATION_NAMES=pgmaster,pgslave1,pgslave2
+#      - PGPOOL_POSTGRES_USERNAME=postgres
+#      - PGPOOL_POSTGRES_PASSWORD=postgres
+#      - PGPOOL_HEALTH_CHECK_USER=postgres
+#      - PGPOOL_HEALTH_CHECK_PASSWORD=postgres
+#      - PGPOOL_SR_CHECK_USER=postgres
+#      - PGPOOL_SR_CHECK_PASSWORD=postgres
+#      - PGPOOL_ADMIN_USERNAME=admin
+#      - PGPOOL_ADMIN_PASSWORD=admin
+#      - PGPOOL_HEALTH_CHECK_PERIOD=2
+#      - PGPOOL_HEALTH_CHECK_TIMEOUT=3
+#      - PGPOOL_HEALTH_CHECK_MAX_RETRIES=2
+#      - PGPOOL_SR_CHECK_PERIOD=2
+#      # Failover/автовозврат
+#      - PGPOOL_FAILOVER_ON_BACKEND_ERROR=yes
+#      - PGPOOL_AUTO_FAILBACK=yes
+#      - PGPOOL_AUTO_FAILBACK_INTERVAL=5
+#      # Балансировка только для SELECT (по умолчанию да), записи — строго на мастер
+#      - PGPOOL_ENABLE_LOAD_BALANCING=yes
+#      # Таймауты клиентских сессий в pgpool (чтоб не висели вечно)
+#      - PGPOOL_CONNECT_TIMEOUT=3
+#      - PGPOOL_CLIENT_IDLE_LIMIT=60
+#      - PGPOOL_CHILD_LIFE_TIME=30
+#      - PGPOOL_CHILD_MAX_CONNECTIONS=100
+#    ports:
+#      - "5435:5432"
+#    depends_on:
+#      - pgmaster
+#      - pgslave1
+#      - pgslave2
+#    networks:
+#      localnet:
+#        ipv4_address: 172.16.0.24
+  haproxy:
+    image: haproxy:2.5
+    container_name: haproxy
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "5001:5001"
+    depends_on:
+      - pgmaster
+      - pgslave1
+      - pgslave2
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.25
+
+  nginx:
+    image: nginx:1.21
+    container_name: nginx-lb
+    restart: on-failure
+    volumes:
+      - "./default.conf:/etc/nginx/conf.d/default.conf"
+    ports:
+      - "4088:80"
+      - "4098:8080"
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.26
+    links:
+      - app
+      - app2
+      - app3
+    depends_on:
+      - app
+      - app2
+      - app3
+
   redis:
     image: redis:6.2
     container_name: redis
@@ -146,22 +221,84 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-      POSTGRES_HOST_MASTER: pgmaster
-      POSTGRES_PORT_MASTER: 5432
-      POSTGRES_HOST_SLAVE1: pgslave1
-      POSTGRES_PORT_SLAVE1: 5433
-      POSTGRES_HOST_SLAVE2: pgslave2
-      POSTGRES_PORT_SLAVE2: 5434
+      POSTGRES_HOST_MASTER: haproxy
+      POSTGRES_PORT_MASTER: 5001
       REDIS_HOST: redis
       REDIS_PORT: 6379
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8081:8081"
     links:
+      - haproxy
+      - kafka
       - pgmaster
       - pgslave1
       - pgslave2
     depends_on:
+      - haproxy
+      - kafka
+      - pgmaster
+      - pgslave1
+      - pgslave2
+
+  app2:
+    build: .
+    container_name: highloadApplication2
+    restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.27
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_MASTER: haproxy
+      POSTGRES_PORT_MASTER: 5001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8084:8081"
+    links:
+      - haproxy
+      - kafka
+      - pgmaster
+      - pgslave1
+      - pgslave2
+    depends_on:
+      - haproxy
+      - kafka
+      - pgmaster
+      - pgslave1
+      - pgslave2
+
+  app3:
+    build: .
+    container_name: highloadApplication3
+    restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.28
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_MASTER: haproxy
+      POSTGRES_PORT_MASTER: 5001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8083:8081"
+    links:
+      - haproxy
+      - kafka
+      - pgmaster
+      - pgslave1
+      - pgslave2
+    depends_on:
+      - haproxy
+      - kafka
       - pgmaster
       - pgslave1
       - pgslave2
@@ -389,6 +526,8 @@ volumes:
   pgadmin:
   redis:
   kafka:
+  haproxy:
+#  pgpool:
   app:
 #  shard_d11:
 #  shard_d12:
