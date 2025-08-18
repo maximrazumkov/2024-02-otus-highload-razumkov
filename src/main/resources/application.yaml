@@ -24,32 +24,39 @@ spring:
     host: localhost
     port: 6379
   datasource:
-    master:
-      driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://localhost:5432/postgres
-      username: postgres
-      password: postgres
-      hikari:
-        minimum-idle: 10
-        maximum-pool-size: 10
-
-    slave1:
-      driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://localhost:5433/postgres
-      username: postgres
-      password: postgres
-      hikari:
-        minimum-idle: 5
-        maximum-pool-size: 5
-
-    slave2:
-      driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://localhost:5434/postgres
-      username: postgres
-      password: postgres
-      hikari:
-        minimum-idle: 5
-        maximum-pool-size: 5
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5001/postgres
+    username: postgres
+    password: postgres
+    hikari:
+      minimum-idle: 30
+      maximum-pool-size: 50
+#    master:
+#      driver-class-name: org.postgresql.Driver
+#      url: jdbc:postgresql://localhost:5432/postgres
+#      username: postgres
+#      password: postgres
+#      hikari:
+#        minimum-idle: 10
+#        maximum-pool-size: 10
+#
+#    slave1:
+#      driver-class-name: org.postgresql.Driver
+#      url: jdbc:postgresql://localhost:5433/postgres
+#      username: postgres
+#      password: postgres
+#      hikari:
+#        minimum-idle: 5
+#        maximum-pool-size: 5
+#
+#    slave2:
+#      driver-class-name: org.postgresql.Driver
+#      url: jdbc:postgresql://localhost:5434/postgres
+#      username: postgres
+#      password: postgres
+#      hikari:
+#        minimum-idle: 5
+#        maximum-pool-size: 5
 
 server:
   port: 8081

@@ -93,6 +93,42 @@ services:
       - "5050:80"
     volumes:
       - pgadmin:/var/lib/pas
+
+  pgpool:
+    image: bitnami/pgpool:latest
+    container_name: pgpool
+    environment:
+      - PGPOOL_BACKEND_NODES=0:pgmaster:5432,1:pgslave1:5433,2:pgslave2:5434
+      - PGPOOL_POSTGRES_USERNAME=postgres
+      - PGPOOL_POSTGRES_PASSWORD=postgres
+      - PGPOOL_HEALTH_CHECK_USER=postgres
+      - PGPOOL_HEALTH_CHECK_PASSWORD=postgres
+      - PGPOOL_SR_CHECK_USER=postgres
+      - PGPOOL_SR_CHECK_PASSWORD=postgres
+      - PGPOOL_ADMIN_USERNAME=admin
+      - PGPOOL_ADMIN_PASSWORD=admin
+    ports:
+      - "5435:5432"
+    depends_on:
+      - pgmaster
+      - pgslave1
+      - pgslave2
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.24
+  haproxy:
+    image: haproxy:2.5
+    container_name: haproxy
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "5001:5001"
+    depends_on:
+      - pgpool
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.25
+
   redis:
     image: redis:6.2
     container_name: redis
@@ -146,22 +182,26 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-      POSTGRES_HOST_MASTER: pgmaster
-      POSTGRES_PORT_MASTER: 5432
-      POSTGRES_HOST_SLAVE1: pgslave1
-      POSTGRES_PORT_SLAVE1: 5433
-      POSTGRES_HOST_SLAVE2: pgslave2
-      POSTGRES_PORT_SLAVE2: 5434
+      POSTGRES_HOST_MASTER: haproxy
+      POSTGRES_PORT_MASTER: 5001
+#      POSTGRES_HOST_SLAVE1: pgslave1
+#      POSTGRES_PORT_SLAVE1: 5433
+#      POSTGRES_HOST_SLAVE2: pgslave2
+#      POSTGRES_PORT_SLAVE2: 5434
       REDIS_HOST: redis
       REDIS_PORT: 6379
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8081:8081"
     links:
+      - haproxy
+      - kafka
       - pgmaster
       - pgslave1
       - pgslave2
     depends_on:
+      - haproxy
+      - kafka
       - pgmaster
       - pgslave1
       - pgslave2
@@ -389,6 +429,8 @@ volumes:
   pgadmin:
   redis:
   kafka:
+  haproxy:
+  pgpool:
   app:
 #  shard_d11:
 #  shard_d12:
