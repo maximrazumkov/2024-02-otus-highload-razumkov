@@ -17,10 +17,10 @@ public class FlywayConfig {
 //                .load();
 //    }
 
-    @Bean(initMethod = "migrate")
-    public Flyway flyway(DataSource dataSource) {
-        return Flyway.configure()
-                .dataSource(dataSource)
-                .load();
-    }
+//    @Bean(initMethod = "migrate")
+//    public Flyway flyway(DataSource dataSource) {
+//        return Flyway.configure()
+//                .dataSource(dataSource)
+//                .load();
+//    }
 }

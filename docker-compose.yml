@@ -99,6 +99,7 @@ services:
     container_name: pgpool
     environment:
       - PGPOOL_BACKEND_NODES=0:pgmaster:5432,1:pgslave1:5433,2:pgslave2:5434
+      - PGPOOL_BACKEND_APPLICATION_NAMES=pgmaster,pgslave1,pgslave2
       - PGPOOL_POSTGRES_USERNAME=postgres
       - PGPOOL_POSTGRES_PASSWORD=postgres
       - PGPOOL_HEALTH_CHECK_USER=postgres
@@ -107,6 +108,21 @@ services:
       - PGPOOL_SR_CHECK_PASSWORD=postgres
       - PGPOOL_ADMIN_USERNAME=admin
       - PGPOOL_ADMIN_PASSWORD=admin
+      - PGPOOL_HEALTH_CHECK_PERIOD=2
+      - PGPOOL_HEALTH_CHECK_TIMEOUT=3
+      - PGPOOL_HEALTH_CHECK_MAX_RETRIES=2
+      - PGPOOL_SR_CHECK_PERIOD=2
+      # Failover/автовозврат
+      - PGPOOL_FAILOVER_ON_BACKEND_ERROR=yes
+      - PGPOOL_AUTO_FAILBACK=yes
+      - PGPOOL_AUTO_FAILBACK_INTERVAL=5
+      # Балансировка только для SELECT (по умолчанию да), записи — строго на мастер
+      - PGPOOL_ENABLE_LOAD_BALANCING=yes
+      # Таймауты клиентских сессий в pgpool (чтоб не висели вечно)
+      - PGPOOL_CONNECT_TIMEOUT=3
+      - PGPOOL_CLIENT_IDLE_LIMIT=60
+      - PGPOOL_CHILD_LIFE_TIME=30
+      - PGPOOL_CHILD_MAX_CONNECTIONS=100
     ports:
       - "5435:5432"
     depends_on:
