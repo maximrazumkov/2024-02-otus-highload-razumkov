@@ -2,7 +2,7 @@ package ru.otus.highload.sevice.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -26,7 +26,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final RedisService redisService;
-//    private final KafkaTemplate<String, Post> kafkaTemplate;
+    private final KafkaTemplate<String, Post> kafkaTemplate;
     private final PostWebSocketHandler postWebSocketHandler;
 
     @Override
@@ -80,7 +80,7 @@ public class PostServiceImpl implements PostService {
             Post kafkaPost = new Post();
             kafkaPost.setId(postId);
             kafkaPost.setUsrId(userId);
-//            kafkaTemplate.send(topicName, kafkaPost);
+            kafkaTemplate.send(topicName, kafkaPost);
         }
     }
 }
