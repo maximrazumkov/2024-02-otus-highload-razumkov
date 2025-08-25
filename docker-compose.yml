@@ -161,14 +161,12 @@ services:
         ipv4_address: 172.16.0.26
     links:
       - app
-#      - highload1
-#      - highload2
-#      - highload3
+      - app2
+      - app3
     depends_on:
       - app
-#      - highload1
-#      - highload2
-#      - highload3
+      - app2
+      - app3
 
   redis:
     image: redis:6.2
@@ -225,10 +223,6 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_HOST_MASTER: haproxy
       POSTGRES_PORT_MASTER: 5001
-#      POSTGRES_HOST_SLAVE1: pgslave1
-#      POSTGRES_PORT_SLAVE1: 5433
-#      POSTGRES_HOST_SLAVE2: pgslave2
-#      POSTGRES_PORT_SLAVE2: 5434
       REDIS_HOST: redis
       REDIS_PORT: 6379
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -246,75 +240,68 @@ services:
       - pgmaster
       - pgslave1
       - pgslave2
-#  highload2:
-#    build: .
-#    container_name: highload2
-#    restart: always
-#    networks:
-#      localnet:
-#        ipv4_address: 172.16.0.27
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#      POSTGRES_DB: postgres
-#      POSTGRES_HOST_MASTER: haproxy
-#      POSTGRES_PORT_MASTER: 5001
-#      #      POSTGRES_HOST_SLAVE1: pgslave1
-#      #      POSTGRES_PORT_SLAVE1: 5433
-#      #      POSTGRES_HOST_SLAVE2: pgslave2
-#      #      POSTGRES_PORT_SLAVE2: 5434
-#      REDIS_HOST: redis
-#      REDIS_PORT: 6379
-#      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#    ports:
-#      - "8084:8081"
-#    links:
-#      - haproxy
-#      - kafka
-#      - pgmaster
-#      - pgslave1
-#      - pgslave2
-#    depends_on:
-#      - haproxy
-#      - kafka
-#      - pgmaster
-#      - pgslave1
-#      - pgslave2
-#
-#  highload3:
-#    build: .
-#    container_name: highload3
-#    restart: always
-#    networks:
-#      localnet:
-#        ipv4_address: 172.16.0.28
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#      POSTGRES_DB: postgres
-#      POSTGRES_HOST_MASTER: haproxy
-#      POSTGRES_PORT_MASTER: 5001
-#      #      POSTGRES_HOST_SLAVE1: pgslave1
-#      #      POSTGRES_PORT_SLAVE1: 5433
-#      #      POSTGRES_HOST_SLAVE2: pgslave2
-#      #      POSTGRES_PORT_SLAVE2: 5434
-#      REDIS_HOST: redis
-#      REDIS_PORT: 6379
-#      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#    ports:
-#      - "8083:8081"
-#    links:
-#      - haproxy
-#      - kafka
-#      - pgmaster
-#      - pgslave1
-#      - pgslave2
-#    depends_on:
-#      - haproxy
-#      - kafka
-#      - pgmaster
-#      - pgslave1
-#      - pgslave2
+
+  app2:
+    build: .
+    container_name: highloadApplication2
+    restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.27
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_MASTER: haproxy
+      POSTGRES_PORT_MASTER: 5001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8084:8081"
+    links:
+      - haproxy
+      - kafka
+      - pgmaster
+      - pgslave1
+      - pgslave2
+    depends_on:
+      - haproxy
+      - kafka
+      - pgmaster
+      - pgslave1
+      - pgslave2
+
+  app3:
+    build: .
+    container_name: highloadApplication3
+    restart: always
+    networks:
+      localnet:
+        ipv4_address: 172.16.0.28
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_MASTER: haproxy
+      POSTGRES_PORT_MASTER: 5001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8083:8081"
+    links:
+      - haproxy
+      - kafka
+      - pgmaster
+      - pgslave1
+      - pgslave2
+    depends_on:
+      - haproxy
+      - kafka
+      - pgmaster
+      - pgslave1
+      - pgslave2
 
   tarantool:
     container_name: tarantool
